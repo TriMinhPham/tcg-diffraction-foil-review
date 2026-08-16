@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#080812" />
     <title>Diffraction Foil Lab</title>
-    <script type="module" crossorigin src="/tcg-diffraction-foil-review/assets/index-B2VCqqMh.js"></script>
-    <link rel="stylesheet" crossorigin href="/tcg-diffraction-foil-review/assets/index-fNgXA1P3.css">
+    <script type="module" crossorigin src="/tcg-diffraction-foil-review/assets/index-CdPc5oDO.js"></script>
+    <link rel="stylesheet" crossorigin href="/tcg-diffraction-foil-review/assets/index-tU8ys8qv.css">
   </head>
   <body>
     <main class="app-shell">
@@ -140,11 +140,18 @@
         </section>
 
         <section class="control-panel" data-control-panel="artwork" hidden>
+          <div class="asset-heading asset-heading--first">
+            <b>Sample cards</b>
+            <small>One artwork · three bundled foil-area maps</small>
+          </div>
+
+          <div class="sample-card-grid" id="sampleCards" aria-label="Sample cards"></div>
+
           <div class="upload-field">
             <label class="upload-button" for="artworkUpload">Upload artwork</label>
             <input id="artworkUpload" type="file" accept="image/png,image/jpeg,image/webp" />
-            <span id="artworkStatus">Procedural sample artwork</span>
-            <button id="clearArtwork" type="button">Remove upload</button>
+            <span id="artworkStatus">Procedural default artwork</span>
+            <button id="clearArtwork" type="button">Clear artwork</button>
           </div>
 
           <label class="toggle-row compact-toggle">
