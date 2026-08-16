@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080812" />
+    <title>Diffraction Foil Lab</title>
+    <script type="module" crossorigin src="/tcg-diffraction-foil-review/assets/index-B2VCqqMh.js"></script>
+    <link rel="stylesheet" crossorigin href="/tcg-diffraction-foil-review/assets/index-fNgXA1P3.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero-copy">
+        <div class="eyebrow"><span></span> WebGL foil study</div>
+        <h1>Diffraction<br /><i>Foil Lab</i></h1>
+        <p>A view-dependent diffraction grating material for collectible cards.</p>
+      </header>
+
+      <nav class="mode-switch" aria-label="Shader version">
+        <button type="button" data-mode="v1">V1 <span>Spectral wash</span></button>
+        <button type="button" data-mode="compare" class="is-active">Compare</button>
+        <button type="button" data-mode="v2">V2 <span>Wave-optical</span></button>
+      </nav>
+
+      <div id="scene" aria-label="Interactive holographic trading card"></div>
+
+      <aside class="controls" aria-label="Foil controls">
+        <div class="controls__head">
+          <div>
+            <span class="kicker">V2 physical model</span>
+            <strong>Wave-optical diffraction grating</strong>
+          </div>
+          <button class="reset" id="reset" type="button">Reset</button>
+        </div>
+
+        <p class="controls__intro">Drag the card itself. Printed art is the physical substrate; the shader adds only light returned by the embossed microstructure.</p>
+
+        <div class="physics-note">
+          <b>No time uniform. No moving light. No screen, depth, or framebuffer sampling.</b>
+          UV changes only the local groove field—where the card is embossed, its direction, pitch, and relief.
+        </div>
+
+        <div class="control-tabs" role="tablist" aria-label="Foil control groups">
+          <button class="is-active" type="button" role="tab" aria-selected="true" data-control-tab="optics">Optics</button>
+          <button type="button" role="tab" aria-selected="false" data-control-tab="patterns">Patterns</button>
+          <button type="button" role="tab" aria-selected="false" data-control-tab="artwork">Artwork</button>
+        </div>
+
+        <section class="control-panel" data-control-panel="optics">
+          <label>
+            <span>Groove pitch <output id="pitchValue">1180 nm</output></span>
+            <input id="pitch" type="range" min="600" max="1600" step="5" value="1180" />
+          </label>
+
+          <label>
+            <span>Relief amplitude <output id="reliefValue">86 nm</output></span>
+            <input id="relief" type="range" min="0" max="160" step="1" value="86" />
+          </label>
+
+          <label>
+            <span>Coherent length <output id="coherenceValue">14.50 μm</output></span>
+            <input id="coherence" type="range" min="2" max="30" step="0.1" value="14.5" />
+          </label>
+
+          <label>
+            <span>Azimuth spread <output id="azimuthValue">0.014</output></span>
+            <input id="azimuth" type="range" min="0" max="0.08" step="0.001" value="0.014" />
+          </label>
+
+          <label>
+            <span>Groove orientation <output id="orientationValue">31°</output></span>
+            <input id="orientation" type="range" min="-90" max="90" step="1" value="31" />
+          </label>
+
+          <label>
+            <span>Foil exposure <output id="exposureValue">5.10</output></span>
+            <input id="exposure" type="range" min="0" max="8" step="0.1" value="5.1" />
+          </label>
+        </section>
+
+        <section class="control-panel" data-control-panel="patterns" hidden>
+          <label class="select-row">
+            <span>Groove shape</span>
+            <select id="grooveShape">
+              <option value="0">Linear</option>
+              <option value="1">Sine wave</option>
+              <option value="2">Chevron</option>
+              <option value="3">Radial</option>
+              <option value="4">Concentric</option>
+            </select>
+          </label>
+
+          <label data-groove-warp-row>
+            <span>Shape amount <output id="grooveWarpValue">0.65</output></span>
+            <input id="grooveWarp" type="range" min="0" max="1" step="0.01" value="0.65" />
+          </label>
+
+          <label class="toggle-row">
+            <span>
+              <b>Embossed microgratings</b>
+              <small>Redirects the local diffraction lobe</small>
+            </span>
+            <input id="embossEnabled" type="checkbox" checked />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+
+          <label class="select-row">
+            <span>Micrograting motif</span>
+            <select id="embossPattern">
+              <option value="0">Starburst</option>
+              <option value="1">Cross</option>
+              <option value="2">Diamond</option>
+              <option value="3">Orbital ring</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Motif size <output id="embossScaleValue">1.00×</output></span>
+            <input id="embossScale" type="range" min="0.45" max="1.8" step="0.01" value="1" />
+          </label>
+
+          <label>
+            <span>Motif density <output id="embossDensityValue">1.00×</output></span>
+            <input id="embossDensity" type="range" min="0.45" max="2" step="0.01" value="1" />
+          </label>
+
+          <label>
+            <span>Emboss strength <output id="embossStrengthValue">1.00</output></span>
+            <input id="embossStrength" type="range" min="0" max="1.5" step="0.01" value="1" />
+          </label>
+
+          <label class="toggle-row toggle-row--separated">
+            <span>
+              <b>Full-card foil</b>
+              <small>Overrides the printed foil mask</small>
+            </span>
+            <input id="fullFoil" type="checkbox" />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+        </section>
+
+        <section class="control-panel" data-control-panel="artwork" hidden>
+          <div class="upload-field">
+            <label class="upload-button" for="artworkUpload">Upload artwork</label>
+            <input id="artworkUpload" type="file" accept="image/png,image/jpeg,image/webp" />
+            <span id="artworkStatus">Procedural sample artwork</span>
+            <button id="clearArtwork" type="button">Remove upload</button>
+          </div>
+
+          <label class="toggle-row compact-toggle">
+            <span>
+              <b>Full-card artwork</b>
+              <small>Artwork and foil map share this placement</small>
+            </span>
+            <input id="fullArtwork" type="checkbox" />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+
+          <div class="asset-heading">
+            <b>Foil-area map</b>
+            <small>White = foil · black = ink · gray = partial</small>
+          </div>
+
+          <div class="upload-field">
+            <label class="upload-button" for="foilMaskUpload">Upload foil map</label>
+            <input id="foilMaskUpload" type="file" accept="image/png,image/jpeg,image/webp" />
+            <span id="foilMaskStatus">Generated card foil mask</span>
+            <button id="clearFoilMask" type="button">Use default</button>
+          </div>
+
+          <label class="toggle-row compact-toggle">
+            <span>
+              <b>Invert foil map</b>
+              <small>Swap protected and reflective areas</small>
+            </span>
+            <input id="foilMaskInvert" type="checkbox" />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+
+          <label>
+            <span>Foil-map amount <output id="foilMapAmountValue">1.00</output></span>
+            <input id="foilMapAmount" type="range" min="0" max="1.5" step="0.01" value="1" />
+          </label>
+
+          <label class="text-row">
+            <span>Card name</span>
+            <input id="cardName" type="text" maxlength="32" value="AURORA WYRM" spellcheck="false" />
+          </label>
+
+          <label class="toggle-row toggle-row--separated">
+            <span>
+              <b>Foil card-name text</b>
+              <small>Uses a dedicated, customizable foil layer</small>
+            </span>
+            <input id="nameFoil" type="checkbox" checked />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+
+          <label class="select-row" data-name-foil-setting>
+            <span>Name foil finish</span>
+            <select id="nameFoilStyle">
+              <option value="rainbow">Rainbow</option>
+              <option value="silver">Silver</option>
+              <option value="gold">Gold</option>
+            </select>
+          </label>
+
+          <label data-name-foil-setting>
+            <span>Name foil amount <output id="nameFoilAmountValue">1.00</output></span>
+            <input id="nameFoilAmount" type="range" min="0" max="1.5" step="0.01" value="1" />
+          </label>
+
+          <p class="local-note">Uploads are decoded locally and never leave this browser.</p>
+        </section>
+
+        <button class="reset-rotation" id="resetRotation" type="button">Reset card rotation</button>
+      </aside>
+
+      <div class="version-tags" aria-hidden="true">
+        <span class="tag-v1">V1 · spectral wash</span>
+        <span class="tag-v2">V2 · wave-optical emboss</span>
+      </div>
+      <div class="hint"><span class="mouse-icon"></span> Drag a card through wide angles to inspect the diffraction lobe</div>
+      <div class="edition">PRISMATIC<br />EDITION <b>01</b></div>
+    </main>
+
+  </body>
+</html>
